@@ -1,5 +1,5 @@
 import '../sass/main.scss';
-import { fetchRequest } from "../js/request";
+import { fetchRequest } from "./request";
 import Notiflix from 'notiflix';
 import SimpleLightbox from "simplelightbox";
 import { async } from "./request";
@@ -42,22 +42,8 @@ const renderGalleryCards = data => {
     </p>
   </div>
 </div>`)
+.join('');
 }
-
-const onLoadMoreBtnClick = async () => {
-  const query = localStorage.getItem('query');
-
-  try {
-    const { data } = await fetchRequest(query);
-
-    galleryList.insertAdjacentHTML('beforeend', renderGalleryCards(data));
-    // increasePageInLocalStorage();
-    const pageIterattor = Number(localStorage.getItem('page')) + 1;
-    localStorage.setItem('page', JSON.stringify(pageIterattor));
-  } catch (err) {
-    console.log(err);
-  }
-};
 
 const formSubmitClick = async event => {
   event.preventDefault();
@@ -77,6 +63,22 @@ const formSubmitClick = async event => {
     const pageIterattor = Number(localStorage.getItem('page')) + 1;
     localStorage.setItem('page', JSON.stringify(pageIterattor));
     showLoadMoreBtn();
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const onLoadMoreBtnClick = async () => {
+  const query = localStorage.getItem('query');
+
+  try {
+    const { data } = await fetchRequest(query);
+
+    let pageIterattor;
+    galleryList.insertAdjacentHTML('beforeend', renderGalleryCards(data));
+
+    pageIterattor += 1;
+    localStorage.setItem('page', JSON.stringify(pageIterattor));
   } catch (err) {
     console.log(err);
   }
