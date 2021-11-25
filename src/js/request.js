@@ -5,7 +5,7 @@ const API_KEY = '24498854-53423749accc3067f6b5cc5fe';
 
 const search = document.querySelector('[name="searchQuery"]');
 
-export async function makeRequest(name, page, per_page) {
+export async function fetchRequest(name, page, per_page) {
   const searchCards = {
       params: {
       key: `${API_KEY}`,
@@ -14,7 +14,7 @@ export async function makeRequest(name, page, per_page) {
       orientation: "horizontal",
       safesearch: true,
       page,
-      per_page
+      per_page: 40,
     },
     };
     
