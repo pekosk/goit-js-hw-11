@@ -13,6 +13,10 @@ const clearGallery = () => {
   galleryList.innerHTML = '';
 }
 
+const hideLoadMoreBtn = () => {
+  loadMoreBtn.classList.add('is-hidden');
+}
+
 const showLoadMoreBtn = () => {
   loadMoreBtn.classList.remove('is-hidden');
 }
@@ -26,7 +30,7 @@ const showLoadMoreBtn = () => {
 const renderGalleryCards = data => {
   return data.hits
   .map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => `<div class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" width="380px" height="240px"/>
+  <img src="${webformatURL}" alt="${tags}" loading="lazy"/>
   <div class="info">
     <p class="info-item">
       <b>Likes:</b> ${likes}
@@ -47,17 +51,21 @@ const renderGalleryCards = data => {
 
 const formSubmitClick = async event => {
   event.preventDefault();
-  
+
   localStorage.setItem('page', '1');
 
   const query = formInput.value;
   localStorage.setItem('query', query);
 
-  // resetPage();
   clearGallery();
 
   try {
     const { data } = await fetchRequest(query);
+    
+    if(data.hits == 0) {
+      hideLoadMoreBtn();
+      Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+    }
     let pageIterattor = Number(localStorage.getItem('page')) + 1;
     localStorage.setItem('page', JSON.stringify(pageIterattor));
     galleryList.insertAdjacentHTML('beforeend', renderGalleryCards(data));
@@ -77,7 +85,7 @@ const onLoadMoreBtnClick = async () => {
     const { data } = await fetchRequest(query);
 
     if (data.totalHits <= pageIterattor * 40) {
-      loadMoreBtn.classList.add('is-hidden');
+      hideLoadMoreBtn();
       Notiflix.Notify.failure(`We're sorry, but you've reached the end of search results.`);
     }
     pageIterattor += 1;
