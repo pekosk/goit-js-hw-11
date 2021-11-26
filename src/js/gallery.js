@@ -63,12 +63,14 @@ const formSubmitClick = async event => {
     const { data } = await fetchRequest(query);
     
     if(data.hits.length === 0) {
+      hideLoadMoreBtn();
       Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
       return;
     }
     let pageIterattor = Number(localStorage.getItem('page')) + 1;
     localStorage.setItem('page', JSON.stringify(pageIterattor));
     galleryList.insertAdjacentHTML('beforeend', renderGalleryCards(data));
+    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
 
     showLoadMoreBtn();
   } catch (err) {
