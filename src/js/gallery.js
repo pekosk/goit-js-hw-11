@@ -62,15 +62,14 @@ const formSubmitClick = async event => {
   try {
     const { data } = await fetchRequest(query);
     
-    if(data.hits == 0) {
-      hideLoadMoreBtn();
-      Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
-    }
-    let pageIterattor = Number(localStorage.getItem('page')) + 1;
+    if(data.hits > 1) {
+      let pageIterattor = Number(localStorage.getItem('page')) + 1;
     localStorage.setItem('page', JSON.stringify(pageIterattor));
     galleryList.insertAdjacentHTML('beforeend', renderGalleryCards(data));
 
     showLoadMoreBtn();
+    }
+    Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
   } catch (err) {
     console.log(err);
   }
