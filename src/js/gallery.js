@@ -53,15 +53,15 @@ const formSubmitClick = async event => {
   const query = formInput.value;
   localStorage.setItem('query', query);
 
+  // resetPage();
   clearGallery();
 
   try {
     const { data } = await fetchRequest(query);
-
-    galleryList.insertAdjacentHTML('beforeend', renderGalleryCards(data));
-    // increasePageInLocalStorage();
-    const pageIterattor = Number(localStorage.getItem('page')) + 1;
+    let pageIterattor = Number(localStorage.getItem('page')) + 1;
     localStorage.setItem('page', JSON.stringify(pageIterattor));
+    galleryList.insertAdjacentHTML('beforeend', renderGalleryCards(data));
+
     showLoadMoreBtn();
   } catch (err) {
     console.log(err);
@@ -70,19 +70,25 @@ const formSubmitClick = async event => {
 
 const onLoadMoreBtnClick = async () => {
   const query = localStorage.getItem('query');
+    let pageIterattor = Number(localStorage.getItem('page'));
+    localStorage.setItem('page', JSON.stringify(pageIterattor));
 
   try {
     const { data } = await fetchRequest(query);
 
-    let pageIterattor;
-    galleryList.insertAdjacentHTML('beforeend', renderGalleryCards(data));
-
+    if (data.totalHits <= pageIterattor * 40) {
+      loadMoreBtn.classList.add('is-hidden');
+      Notiflix.Notify.failure(`We're sorry, but you've reached the end of search results.`);
+    }
     pageIterattor += 1;
     localStorage.setItem('page', JSON.stringify(pageIterattor));
-  } catch (err) {
+    console.log(pageIterattor);
+    galleryList.insertAdjacentHTML('beforeend', renderGalleryCards(data, data.totalHits));
+  }
+   catch (err) {
     console.log(err);
   }
-};
+}
 
 gallerySearch.addEventListener('submit', formSubmitClick);
 loadMoreBtn.addEventListener('click', onLoadMoreBtnClick);
